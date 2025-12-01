@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>QuickDose — Advanced Health Monitoring & Smart Auto‑Medication</title>
+<meta name="description" content="QuickDose — wearable health monitor and automatic medication delivery. Student project by Nicolas, Anthony, Adrian & Darius.">
+
+<style>
+:root{
+  --bg:#f6fbfc; --card:#fff; --muted:#4f7d82; --text:#06282b;
+  --accent:#18b7b0; --accent-2:#1ea8d6; --glass: rgba(255,255,255,0.7);
+  --radius:16px; --shadow: 0 10px 30px rgba(3,18,20,0.08);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+.dark{
+  --bg: #071021; --card:#071a20; --muted:#7fb9bf; --text:#e6f9f8;
+  --accent:#0fb8a8; --accent-2:#13a2d3; --glass: rgba(255,255,255,0.03); --shadow: 0 12px 48px rgba(0,0,0,0.6);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#eaf8fb);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .4s, color .4s}
+body{background-size:100% 120%;animation:bgShift 16s ease-in-out infinite alternate;}
+@keyframes bgShift{0%{background-position:0 0;}100%{background-position:0 40px;}}
+
+/* Hover scaling */
+.card:hover, .btn:hover, nav a:hover, .cta:hover{transform: scale(1.05);transition: transform 0.25s ease;}
+
+/* Header */
+header{position:sticky;top:0;background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));backdrop-filter:blur(8px);border-bottom:1px solid rgba(6,40,43,0.05);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;z-index:60}
+.dark header{background:linear-gradient(180deg, rgba(7,16,33,0.7), rgba(7,16,33,0.5));border-bottom:1px solid rgba(255,255,255,0.03)}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:0 8px 24px rgba(24,183,176,0.12)}
+nav{display:flex;gap:14px;align-items:center}
+nav a{color:var(--text);text-decoration:none;padding:8px 10px;border-radius:10px;font-weight:600}
+.cta{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:10px 14px;border-radius:12px;text-decoration:none}
+
+/* Dark-mode toggle */
+.toggle{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:8px;border-radius:10px;cursor:pointer}
+.dark .toggle{border:1px solid rgba(255,255,255,0.06)}
+
+/* Hero */
+.hero{display:flex;gap:28px;align-items:center;padding:56px 18px;max-width:1200px;margin:0 auto}
+.hero-left{flex:1}
+h1{font-size:42px;margin:0 0 10px;line-height:1.05}
+p.lead{color:var(--muted);margin:0 0 18px}
+.actions{display:flex;gap:12px}
+.btn{padding:12px 16px;border-radius:12px;text-decoration:none;font-weight:700;background:transparent;border:none;cursor:pointer}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
+.btn.ghost{background:transparent;border:1px solid rgba(6,40,43,0.06);color:var(--text)}
+.btn.hover-scale:hover{transform:scale(1.08);transition:0.3s}
+
+/* Device 3D floating + pulse + glow */
+.hero-right{width:380px;display:flex;align-items:center;justify-content:center;perspective:1200px}
+.device-wrap{width:340px;height:340px;border-radius:24px;background:linear-gradient(180deg,var(--card),rgba(255,255,255,0.02));box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.9,.2,1)}
+.device-wrap:hover{transform:rotateY(10deg) rotateX(8deg) translateY(-8px)}
+.device-3d{width:240px;height:240px;border-radius:28px;background:linear-gradient(180deg,var(--accent-2),var(--accent));position:relative;box-shadow:0 18px 60px rgba(2,30,30,0.08);display:flex;align-items:center;justify-content:center;color:white;transform-style:preserve-3d;animation:float 4s ease-in-out infinite alternate}
+@keyframes float{0%{transform:translateY(0px) rotateY(0deg) rotateX(0deg);}50%{transform:translateY(-6px) rotateY(2deg) rotateX(2deg);}100%{transform:translateY(0px) rotateY(0deg) rotateX(0deg);}}
+.device-3d .band{position:absolute;left:-28px;right:-28px;bottom:18px;height:44px;border-radius:22px;background:linear-gradient(90deg,rgba(2,20,20,0.35),rgba(255,255,255,0.04));transform:translateZ(-20px)}
+.device-3d .core{width:180px;height:140px;border-radius:16px;background:linear-gradient(180deg,#023b3c,#0b6d6b);display:flex;align-items:center;justify-content:center;position:relative;box-shadow:inset 0 -6px 30px rgba(0,0,0,0.2)}
+.screen{width:150px;height:110px;background:linear-gradient(180deg,#052f31,#0c6060);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.pulse-ring{position:absolute;width:300px;height:300px;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 0 rgba(24,183,176,0.18);animation:pulse 2.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(24,183,176,0.30)}60%{box-shadow:0 0 0 40px rgba(24,183,176,0.02)}100%{box-shadow:0 0 0 0 rgba(24,183,176,0)}}
+.hr-wave{width:120%;height:40px;transform:translateX(-10%)}
+
+/* Sections */
+.section{max-width:1100px;margin:0 auto;padding:56px 18px}
+.grid{display:grid;gap:20px}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--card);padding:20px;border-radius:14px;box-shadow:var(--shadow);transition:transform .35s}
+.card:hover{transform:translateY(-8px) scale(1.04);box-shadow:0 14px 32px rgba(0,0,0,0.12)}
+.reveal{opacity:0;transform:translateY(12px);transition:opacity .7s ease,transform .7s ease}
+.reveal.is-visible{opacity:1;transform:none}
+
+/* Dashboard */
+.dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:start}
+.panel{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
+.reading{font-size:28px;font-weight:700}
+.reading.sugar-glow{color:#10b981;text-shadow:0 0 12px rgba(16,185,129,0.28);transition:0.3s}
+.small{color:var(--muted);font-size:13px}
+.sparkline{height:70px;width:100%}
+
+/* Heartbeat */
+.heart-wrap{display:flex;align-items:center;gap:12px}
+.heart{width:36px;height:36px;display:inline-block;transform-origin:center;}
+.heart svg{width:100%;height:100%;filter:drop-shadow(0 6px 18px rgba(255,50,90,0.12));}
+@keyframes beat{0%{transform:scale(1)}30%{transform:scale(1.25)}100%{transform:scale(1)}}
+
+/* Timeline */
+.timeline{position:relative;padding-left:18px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--accent),var(--accent-2));border-radius:4px}
+.event{position:relative;padding:12px 12px 12px 28px;margin-bottom:18px}
+.dot{position:absolute;left:-2px;top:12px;width:14px;height:14px;border-radius:50%;background:var(--card);border:4px solid var(--accent)}
+
+/* Rounded icons */
+.icon{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-size:18px;margin-bottom:10px;box-shadow:0 6px 16px rgba(0,0,0,0.12)}
+.icon.pulse{animation:pulseIcon 2s infinite alternate}
+@keyframes pulseIcon{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+
+/* Footer */
+footer{padding:36px 18px;text-align:center;color:var(--muted)}
+
+/* Carousel */
+.carousel-wrap{position:relative;overflow:hidden;border-radius:16px;margin-top:24px;box-shadow:var(--shadow);cursor:pointer}
+.carousel-track{display:flex;transition:transform 0.5s ease}
+.carousel-slide{min-width:100%;padding:12px;display:flex;justify-content:center;align-items:center;position:relative;transition:transform 0.4s}
+.carousel-slide img{width:80%;border-radius:16px;transition:transform .3s;cursor:pointer;animation:floatSlide 6s ease-in-out infinite alternate}
+.carousel-slide img:hover{transform:scale(1.06) rotateZ(-1deg);box-shadow:0 8px 24px rgba(24,183,176,0.28)}
+@keyframes floatSlide{0%{transform:translateY(0px)}50%{transform:translateY(-6px)}100%{transform:translateY(0px)}}
+.carousel-controls{display:flex;justify-content:center;margin-top:12px;gap:12px}
+.carousel-btn{background:var(--accent);color:white;padding:8px 12px;border-radius:12px;border:none;cursor:pointer;transition:transform .2s}
+.carousel-btn:hover{transform:scale(1.1)}
+
+/* Responsive */
+@media (max-width:900px){.grid.cols-3{grid-template-columns:repeat(2,1fr)}.hero{padding:36px 18px}.hero-right{order:-1}}
+@media (max-width:600px){.grid.cols-3{grid-template-columns:1fr}.hero{flex-direction:column}.device-wrap{width:300px;height:300px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><div class="logo" aria-hidden>QD</div><div><strong style="font-size:16px">QuickDose</strong><div style="font-size:12px;color:var(--muted)">Smart health wearable</div></div></div>
+  <nav aria-label="Main navigation">
+    <a href="#how">How It Works</a>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#timeline">Timeline</a>
+    <button id="darkToggle" class="toggle" aria-pressed="false" title="Toggle dark mode">🌙</button>
+    <a class="cta" href="#get-started">Get Started</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-left">
+    <h1 id="hero-title">Fast, accurate medication — when seconds matter.</h1>
+    <p class="lead">QuickDose continuously watches for dangerous vitals and automatically delivers a precise medication dose. Built with safety layers, caregiver alerts, and medical‑grade sensing.</p>
+    <div class="actions">
+      <a class="btn primary" href="#dashboard">View Dashboard</a>
+      <a class="btn ghost" href="#how">See How</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="device-wrap" role="img" aria-label="QuickDose device visual">
+      <div class="pulse-ring" aria-hidden="true"></div>
+      <div class="device-3d" id="device3d">
+        <div class="band" aria-hidden="true"></div>
+        <div class="core">
+          <div class="screen">
+            <svg class="hr-wave" viewBox="0 0 600 100" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M0 50 C 80 10, 140 90, 220 50 C 300 10, 360 90, 440 50 C 520 10, 580 90, 600 50" stroke="#7ef0e8" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <div style="position:absolute;bottom:10px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;color:#bff6f3;font-weight:700">
+              <div style="text-align:left"><div class="icon" style="width:34px;height:28px;border-radius:8px;">🍬</div><div class="small">Sugar Level</div><div class="reading" id="sugar">92 mg/dL</div></div>
+              <div style="text-align:right"><div class="icon" style="width:34px;height:28px;border-radius:8px;">❤️</div><div class="small">BPM</div><div class="reading" id="bpmVal">72</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="section">
+  <div class="icon pulse">🩺</div>
+  <h2>How QuickDose Works</h2>
+  <div class="grid cols-3" style="margin-top:18px">
+    <div class="card reveal"><div class="icon pulse">🩺</div><h3>Monitor</h3><p class="small">High‑precision sensors track sugar, heart rate and skin temperature continuously.</p></div>
+    <div class="card reveal"><div class="icon pulse">📊</div><h3>Analyze</h3><p class="small">Risk logic evaluates trends and detects events well before symptoms worsen.</p></div>
+    <div class="card reveal"><div class="icon pulse">💉</div><h3>Act</h3><p class="small">The device can autonomously administer a pre-configured dose with multiple safety confirmations.</p></div>
+  </div>
+</section>
+
+<!-- Dashboard Section -->
+<section id="dashboard" class="section">
+  <div class="icon pulse">📟</div>
+  <h2>Live Health Dashboard (demo)</h2>
+  <div class="dashboard" style="margin-top:18px">
+    <!-- Current Readings -->
+    <div class="panel card reveal">
+      <h4><div class="icon pulse">📟</div>Current Readings</h4>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div>
+          <div class="small">Sugar Level</div>
+          <div class="reading sugar-glow" id="sugarDisplay">92 mg/dL</div>
+          <div class="small">Trend: stable</div>
+          <svg class="sparkline" viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">
+            <polyline points="0,30 30,20 60,24 90,18 120,26 150,22 180,24 200,20" fill="none" stroke="#17c2b8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div style="margin-top:8px">
+          <div class="small">Battery</div>
+          <div style="font-weight:700">78%</div>
+          <div style="height:8px;background:#e6f6f5;border-radius:8px;margin-top:4px;overflow:hidden">
+            <div style="width:78%;height:8px;background:linear-gradient(90deg,var(--accent),var(--accent-2))"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Heart Rate Monitor -->
+    <div class="panel card reveal">
+      <h4><div class="icon pulse">💓</div>Heart Rate Monitor</h4>
+      <div style="text-align:center">
+        <div class="reading" id="hrDisplay">72 BPM</div>
+        <svg class="sparkline" viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">
+          <polyline points="0,30 20,15 40,25 60,18 80,28 100,22 120,26 140,20 160,24 180,18 200,30" fill="none" stroke="#ff4d6d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Alerts & Actions -->
+    <div class="panel card reveal">
+      <h4><div class="icon">⚠️</div>Alerts & Actions</h4>
+      <p class="small">Recent events and confirmations.</p>
+      <ul style="margin-top:12px;padding-left:18px">
+        <li><strong>10:12</strong> — Auto‑dose delivered (0.5 units) • confirmed</li>
+        <li><strong>08:34</strong> — Low sugar warning • caregiver notified</li>
+        <li><strong>Yesterday</strong> — Firmware update available</li>
+      </ul>
+      <div style="margin-top:16px;display:flex;gap:8px">
+        <button class="btn primary" onclick="simulateEvent()">Simulate Safe Dose</button>
+        <button class="btn ghost" onclick="downloadReport()">Download Report</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section grid cols-3">
+  <div class="card reveal btn hover-scale"><div class="icon pulse">🚀</div><h3>Future Development</h3><p class="small">Adding AI predictive dosing & cloud connectivity.</p></div>
+  <div class="card reveal btn hover-scale"><div class="icon pulse">🎯</div><h3>Our Mission</h3><p class="small">Keep every user safe and empowered with automatic interventions.</p></div>
+  <div class="card reveal btn hover-scale"><div class="icon pulse">💡</div><h3>Why This Matters</h3><p class="small">Prevention and real-time monitoring save lives.</p></div>
+</section>
+
+<!-- Carousel / Image Slider -->
+<section class="section">
+  <h2>Device & Dashboard Preview</h2>
+  <div class="carousel-wrap reveal">
+    <div class="carousel-track" id="carouselTrack">
+      <div class="carousel-slide"><img src="https://via.placeholder.com/600x300?text=Dashboard+1" alt="Dashboard screenshot 1"></div>
+      <div class="carousel-slide"><img src="https://via.placeholder.com/600x300?text=Dashboard+2" alt="Dashboard screenshot 2"></div>
+      <div class="carousel-slide"><img src="https://via.placeholder.com/600x300?text=Device+View" alt="Device screenshot"></div>
+    </div>
+  </div>
+  <div class="carousel-controls">
+    <button class="carousel-btn" id="prevBtn">◀</button>
+    <button class="carousel-btn" id="nextBtn">▶</button>
+  </div>
+</section>
+
+<section id="timeline" class="section">
+  <h2>Project Timeline</h2>
+  <div class="timeline reveal">
+    <div class="event"><div class="dot"></div><strong>Jan 2025:</strong> Concept & Prototype</div>
+    <div class="event"><div class="dot"></div><strong>Mar 2025:</strong> Sensor & Dashboard Demo</div>
+    <div class="event"><div class="dot"></div><strong>Jun 2025:</strong> Full Device Testing</div>
+    <div class="event"><div class="dot"></div><strong>Oct 2025:</strong> Presentation & Review</div>
+  </div>
+</section>
+
+<footer>
+  QuickDose &copy; 2025 — Student project by Nicolas, Anthony, Adrian & Darius
+</footer>
+
+<script>
+/* Dark mode toggle */
+const toggleBtn=document.getElementById('darkToggle');
+toggleBtn.addEventListener('click',()=>{document.body.classList.toggle('dark');toggleBtn.setAttribute('aria-pressed',document.body.classList.contains('dark'))});
+
+/* Heartbeat animation */
+const heart=document.getElementById('heartBeat');
+setInterval(()=>{heart.style.animation='beat 0.6s';setTimeout(()=>heart.style.animation='none',600)},1200);
+
+/* Sugar/BPM demo animation */
+const sugarEl=document.getElementById('sugarDisplay');
+const hrEl = document.getElementById('hrDisplay');
+let sugar=92,bpm=72;
+setInterval(()=>{
+  sugar+=Math.round(Math.random()*4-2);
+  bpm+=Math.round(Math.random()*2-1);
+  if(sugar<80)sugar=80;if(sugar>140)sugar=140;
+  if(bpm<55)bpm=55;if(bpm>110)bpm=110;
+  sugarEl.textContent=sugar+' mg/dL';
+  document.getElementById('bpmVal').textContent=bpm;
+  hrEl.textContent = bpm + ' BPM';
+},1500);
+
+/* Reveal animations */
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-visible');}})}, {threshold:0.15});
+document.querySelectorAll('.reveal').forEach(r=>observer.observe(r));
+
+/* Carousel functionality */
+const track = document.getElementById('carouselTrack');
+const slides = track.children;
+let index = 0;
+function showSlide(i){index = (i + slides.length) % slides.length; track.style.transform = `translateX(-${index*100}%)`;}
+document.getElementById('prevBtn').addEventListener('click',()=>showSlide(index-1));
+document.getElementById('nextBtn').addEventListener('click',()=>showSlide(index+1));
+setInterval(()=>showSlide(index+1),4000);
+
+/* Simulate event & download placeholder */
+function simulateEvent(){alert("Simulated safe dose delivered.");}
+function downloadReport(){alert("Report download started.");}
+</script>
+
+</body>
+</html>
